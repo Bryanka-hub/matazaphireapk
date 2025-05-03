@@ -179,10 +179,12 @@ export default function TargetsPage() {
     <div className="p-4 space-y-6">
       {/* Action buttons */}
       <div className="flex justify-between items-center">
-        <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-          <span className="text-xl font-bold">+</span>
-          <span>AddAssets</span>
-        </button>
+        <Link href="/dashboard/targets/addAssessment">
+          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            <span className="text-xl font-bold">+</span>
+            <span>Add Assets</span>
+          </button>
+        </Link>
         
         <div className="flex gap-3 items-center">
           <button 
@@ -523,22 +525,22 @@ export default function TargetsPage() {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
-            <span className="ml-1">Previous</span>
+            <span className="ml-1 cursor-pointer">Previous</span>
           </button>
           
-          <button className="px-3 py-1 border border-blue-500 bg-blue-500 text-white rounded-md">
+          <button className="px-3 py-1 cursor-pointer border border-blue-500 bg-blue-500 text-white rounded-md">
             1
           </button>
           
-          <button className="px-3 py-1 border border-gray-300 text-gray-500 rounded-md">
+          <button className="px-3 py-1 cursor-pointer border border-gray-300 text-gray-500 rounded-md">
             ...
           </button>
           
-          <button className="px-3 py-1 border border-gray-300 text-gray-500 rounded-md">
+          <button className="px-3 py-1 cursor-pointer border border-gray-300 text-gray-500 rounded-md">
             15
           </button>
           
-          <button className="px-3 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 flex items-center">
+          <button className="px-3 cursor-pointer py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 flex items-center">
             <span className="mr-1">Next</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6"></polyline>
