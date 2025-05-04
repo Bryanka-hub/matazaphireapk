@@ -50,19 +50,31 @@ export default function Navbar() {
         label="Dashboard" 
         href="/dashboard" 
         isActive={activeMenu === 'dashboard'} 
-        icon={<Image src="/icons/icDashboard.svg" width={18} height={18} alt="Dashboard icon" />}
+        icon={
+          activeMenu === 'dashboard' 
+            ? <Image src="/icons/icDashboardActive.svg" width={18} height={18} alt="Dashboard active icon" />
+            : <Image src="/icons/icDashboard.svg" width={18} height={18} alt="Dashboard icon" />
+        }
       />
       <NavItem 
         label="Targets" 
         href="/dashboard/targets" 
         isActive={activeMenu === 'targets'} 
-        icon={<Image src="/icons/icTarget.svg" width={18} height={18} alt="Target icon" />}
+        icon={
+          activeMenu === 'targets' 
+            ? <Image src="/icons/icTargetActive.svg" width={18} height={18} alt="Target active icon" />
+            : <Image src="/icons/icTarget.svg" width={18} height={18} alt="Target icon" />
+        }
       />
       <NavItem 
         label="Scans" 
         href="/dashboard/scans" 
         isActive={activeMenu === 'scans'} 
-        icon={<Image src="/icons/icScan.svg" width={18} height={18} alt="Scan icon" />}
+        icon={
+          activeMenu === 'scans' 
+            ? <Image src="/icons/icScanActive.svg" width={18} height={18} alt="Scan active icon" />
+            : <Image src="/icons/icScan.svg" width={18} height={18} alt="Scan icon" />
+        }
       />
       <NavItem 
         label="Report" 
