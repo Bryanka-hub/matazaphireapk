@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Info, Trash2, Download, Calendar, X, Check, StopCircle, Play } from 'lucide-react';
+import { Info, Trash2, Download, X, Check, StopCircle, Play } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ScanDailyModal, { ScanFormData } from './components/scanDaily';
 
 interface ScanData {
   taskName: string;
@@ -195,6 +196,33 @@ export default function ScansPage() {
     );
   };
 
+  // State untuk modal scan
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+
+  // Handle submit dari form scan
+  const handleScanSubmit = (data: ScanFormData) => {
+    console.log('Scan schedule created:', data);
+    // Di sini kamu bisa menambahkan logika untuk menyimpan data scan
+    // Misalnya menambahkan scan baru ke state scans
+    
+    // Contoh menambahkan scan baru (dalam kasus nyata, ini akan menggunakan data dari API)
+    const newScan: ScanData = {
+      taskName: data.taskName,
+      address: data.targetAsset,
+      startDate: new Date().toLocaleDateString('en-GB') + ', ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      scanStatus: 'Not Scanned',
+      vulnerabilities: {
+        low: 0,
+        medium: 0,
+        high: 0,
+        critical: 0,
+        info: 0
+      }
+    };
+    
+    setScans(prev => [newScan, ...prev]);
+  };
+
   return (
     <div className="p-4 space-y-6">
       {/* Action buttons */}
@@ -227,7 +255,10 @@ export default function ScansPage() {
             <span>Stop</span>
           </button>
 
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+          <button 
+            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+            onClick={() => setIsScanModalOpen(true)}
+          >
             <Image src="/icons/icBtnScan.svg" width={16} height={16} alt="Scan icon" />
             <span>Scan</span>
           </button>
@@ -481,6 +512,13 @@ export default function ScansPage() {
           </button>
         </div>
       </div>
+      
+      {/* Modal Scan Daily */}
+      <ScanDailyModal 
+        isOpen={isScanModalOpen}
+        onClose={() => setIsScanModalOpen(false)}
+        onSubmit={handleScanSubmit}
+      />
     </div>
   );
 }
