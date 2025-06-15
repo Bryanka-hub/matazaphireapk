@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { Info } from 'lucide-react';
 import { ApexOptions } from 'apexcharts';
+import { Info } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 // Import ApexCharts secara dinamis karena ini komponen client-side
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -51,6 +50,25 @@ const CardVulnerabilities = () => {
     },
     legend: {
       show: true
+    },
+    tooltip: {
+      enabled: true,
+      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+        const value = series[seriesIndex][dataPointIndex];
+        const label = w.globals.labels[dataPointIndex];
+        return `
+          <div style="
+            color: #1e40af;
+            font-size: 13px;
+            font-weight: 600;
+            background: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          ">
+            ● ${label}: ${value}
+          </div>`;
+      }
     }
   };
 
@@ -62,13 +80,12 @@ const CardVulnerabilities = () => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-medium text-gray-700">Vulnerabilities Response</h2>
-        <Info size={18} className="text-gray-400" />
+        <h2 className="text-lg font-medium text-black">Vulnerabilities Response</h2>
+        <Info size={18} className="text-black" />
       </div>
-      
+
       <div className="flex items-center justify-center" style={{ height: '250px' }}>
-        {/* @ts-ignore */}
-        <ApexChart 
+        <ApexChart
           options={chartOptions}
           series={chartSeries}
           type="bar"
@@ -76,8 +93,6 @@ const CardVulnerabilities = () => {
           width={500}
         />
       </div>
-      
-      
     </div>
   );
 };

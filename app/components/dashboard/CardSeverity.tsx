@@ -1,11 +1,9 @@
 'use client';
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { Info } from 'lucide-react';
 import { ApexOptions } from 'apexcharts';
+import { Info } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
-// Import ApexCharts secara dinamis karena ini komponen client-side
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const CardSeverity = () => {
@@ -24,7 +22,7 @@ const CardSeverity = () => {
             show: true,
             total: {
               show: true,
-              fontSize: '22px',
+              fontSize: '20px',
               fontWeight: 600,
               color: '#333',
             }
@@ -39,6 +37,21 @@ const CardSeverity = () => {
       position: 'right',
       offsetY: 0,
       height: 230,
+    },
+    tooltip: {
+      enabled: true,
+      
+      style: {
+        fontSize: '12px',
+        fontFamily: 'inherit',
+        
+      },
+      
+      y: {
+        formatter: function(val: number) {
+          return val.toString(); // Menampilkan nilai tanpa format tambahan
+        }
+      }
     }
   };
 
@@ -47,12 +60,11 @@ const CardSeverity = () => {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-medium text-gray-700">Severity Vulnerabilities in Number</h2>
+        <h2 className="text-lg font-medium text-black">Severity Vulnerabilities in Number</h2>
         <Info size={18} className="text-gray-400" />
       </div>
       
       <div className="flex items-center justify-center" style={{ height: '250px' }}>
-        {/* @ts-ignore */}
         <ApexChart 
           options={chartOptions}
           series={chartSeries}

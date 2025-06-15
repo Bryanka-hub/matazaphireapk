@@ -1,8 +1,7 @@
-import React from "react";
-import Image from "next/image";
+import CardLatestScan from "@/app/components/dashboard/CardLatestScan";
 import CardSeverity from "@/app/components/dashboard/CardSeverity";
 import CardVulnerabilities from "@/app/components/dashboard/CardVulnerabilities";
-import CardLatestScan from "@/app/components/dashboard/CardLatestScan";
+import Image from "next/image";
 
 export default function DashboardPage() {
   return (
