@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
 import { Calendar, Clock, X } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface ScanDailyModalProps {
     isOpen: boolean;
