@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -134,6 +134,22 @@ export default function ReportPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">REPORT</h1>
+        <div className="flex gap-3 items-center">
+          <button 
+            className={`flex items-center gap-2 border border-red-500 text-red-500 px-4 py-2 rounded-md hover:bg-red-50 ${selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={selectedItems.length === 0}
+          >
+            <Trash2 size={16} />
+            <span>Delete</span>
+          </button>
+          
+          <div className="h-8 w-px bg-gray-300"></div>
+          
+          <button className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50">
+            <Download size={16} />
+            <span>Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Table */}

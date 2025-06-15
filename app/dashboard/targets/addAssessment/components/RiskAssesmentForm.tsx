@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Step1AboutAssets from './steps/Step1AboutAssets';
 import Step2ThreatAgentFactors from './steps/Step2ThreatAgentFactors';
 import Step3VulnerabilityFactors from './steps/Step3VulnerabilityFactors';

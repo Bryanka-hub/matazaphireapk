@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Download, Play, StopCircle, Trash2 } from 'lucide-react';
+import { ChevronDown, Download, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import ScanDailyModal, { ScanFormData } from './components/scanDaily';
@@ -154,18 +154,18 @@ export default function ScansPage() {
             <span>Export</span>
           </button>
 
-          <button className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50">
+          {/* <button className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50">
             <StopCircle size={16} />
             <span>Stop</span>
-          </button>
+          </button> */}
 
-          <button 
+          {/* <button 
             className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
             onClick={() => setIsScanModalOpen(true)}
           >
             <Play size={16} />
             <span>Scan</span>
-          </button>
+          </button> */}
         </div>
       </div>
 
