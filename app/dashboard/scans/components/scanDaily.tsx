@@ -304,13 +304,13 @@ const ScanDailyModal: React.FC<ScanDailyModalProps> = ({ isOpen, onClose, onSubm
                                 rows={2}
                             />
                         </div>
-
+                        
                         <button
                             type="submit"
                             className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors uppercase font-medium"
                         >
                             SUBMIT
-                        </button>
+                        </button>    
                     </div>
                 </form>
             </div>
