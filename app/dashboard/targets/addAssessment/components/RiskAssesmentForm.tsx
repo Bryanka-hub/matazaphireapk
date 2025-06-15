@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Step1AboutAssets from './steps/Step1AboutAssets';
 import Step2ThreatAgentFactors from './steps/Step2ThreatAgentFactors';
 import Step3VulnerabilityFactors from './steps/Step3VulnerabilityFactors';
@@ -11,11 +12,12 @@ interface RiskAssesmentFormProps {
   setCurrentStep: (step: number) => void;
 }
 
-export default function RiskAssesmentForm({ 
-  currentStep, 
-  setCurrentStep 
+export default function RiskAssesmentForm({
+  currentStep,
+  setCurrentStep
 }: RiskAssesmentFormProps) {
-  
+  const router = useRouter();
+
   const nextStep = () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
@@ -28,25 +30,33 @@ export default function RiskAssesmentForm({
     }
   };
 
+  // Simulasi handle submit
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Simulasi penyimpanan data, bisa diganti dengan fetch/axios post ke backend
+    console.log('Assessment submitted');
+
+    // Redirect ke halaman targets
+    router.push('/dashboard/targets');
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1:
-        return <Step1AboutAssets />;
-      case 2:
-        return <Step2ThreatAgentFactors />;
-      case 3:
-        return <Step3VulnerabilityFactors />;
-      case 4:
-        return <Step4TechnicalImpactFactors />;
-      case 5:
-        return <Step5BusinessImpactFactors />;
-      default:
-        return <Step1AboutAssets />;
+      case 1: return <Step1AboutAssets />;
+      case 2: return <Step2ThreatAgentFactors />;
+      case 3: return <Step3VulnerabilityFactors />;
+      case 4: return <Step4TechnicalImpactFactors />;
+      case 5: return <Step5BusinessImpactFactors />;
+      default: return <Step1AboutAssets />;
     }
   };
 
   return (
-    <div className="w-full h-full p-6 bg-white rounded-lg ml-4 text-gray-700">
+    <form
+      onSubmit={handleSubmit} // form akan submit ketika currentStep === 5 dan tombol submit ditekan
+      className="w-full h-full p-6 bg-white rounded-lg ml-4 text-gray-700"
+    >
       <div className="mb-6">
         <h2 className="text-2xl font-bold">
           {currentStep === 1 && 'About Assets'}
@@ -56,35 +66,40 @@ export default function RiskAssesmentForm({
           {currentStep === 5 && 'Business Impact Factors'}
         </h2>
       </div>
-      
-      <div className="mb-8">
-        {renderStepContent()}
-      </div>
-      
+
+      <div className="mb-8">{renderStepContent()}</div>
+
       <div className="flex justify-between mt-8">
         <button
+          type="button"
           onClick={prevStep}
           disabled={currentStep === 1}
           className={`px-4 py-2 rounded ${
-            currentStep === 1 
-              ? 'bg-gray-300 cursor-not-allowed' 
+            currentStep === 1
+              ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-blue-500 text-white hover:bg-blue-600'
           }`}
         >
           Back
         </button>
-        
-        <button
-          onClick={nextStep}
-          className={`px-4 py-2 rounded ${
-            currentStep === 5
-              ? 'bg-green-500 hover:bg-green-600 text-white'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
-        >
-          {currentStep === 5 ? 'Submit' : 'Next'}
-        </button>
+
+        {currentStep === 5 ? (
+          <button
+            type="submit"
+            className="px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
+          >
+            Submit
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={nextStep}
+            className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Next
+          </button>
+        )}
       </div>
-    </div>
+    </form>
   );
 }
