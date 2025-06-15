@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Step1AboutAssets from './steps/Step1AboutAssets';
 import Step2ThreatAgentFactors from './steps/Step2ThreatAgentFactors';
 import Step3VulnerabilityFactors from './steps/Step3VulnerabilityFactors';
 import Step4TechnicalImpactFactors from './steps/Step4TechnicalImpactFactors';
 import Step5BusinessImpactFactors from './steps/Step5BusinessImpactFactors';
+import SimpanConfirmation from './SimpanConfirmation';
+import AsetSerupa from './AsetSerupa';
 
 interface RiskAssesmentFormProps {
   currentStep: number;
@@ -17,6 +20,10 @@ export default function RiskAssesmentForm({
   setCurrentStep
 }: RiskAssesmentFormProps) {
   const router = useRouter();
+  
+  // State untuk modal
+  const [showSimpanConfirmation, setShowSimpanConfirmation] = useState(false);
+  const [showAsetSerupa, setShowAsetSerupa] = useState(false);
 
   const nextStep = () => {
     if (currentStep < 5) {
@@ -30,15 +37,42 @@ export default function RiskAssesmentForm({
     }
   };
 
-  // Simulasi handle submit
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle submit button click (bukan form submit)
+  const handleSubmitClick = () => {
+    // Munculin modal konfirmasi simpan
+    setShowSimpanConfirmation(true);
+  };
 
-    // Simulasi penyimpanan data, bisa diganti dengan fetch/axios post ke backend
-    console.log('Assessment submitted');
+  // Handle konfirmasi simpan dari modal
+  const handleConfirmSimpan = () => {
+    setShowSimpanConfirmation(false);
+    
+    // Simulasi cek duplikasi data
+    // Aku set random buat simulasi (50% chance ada duplikasi)
+    const isDuplicate = Math.random() > 0.5;
+    
+    if (isDuplicate) {
+      // Kalau ada duplikasi, munculin modal aset serupa
+      setShowAsetSerupa(true);
+    } else {
+      // Kalau ga ada duplikasi, langsung simpan dan redirect
+      console.log('Assessment submitted successfully');
+      router.push('/dashboard/targets');
+    }
+  };
 
-    // Redirect ke halaman targets
+  // Handle delete asset dari modal aset serupa
+  const handleDeleteAsset = () => {
+    setShowAsetSerupa(false);
+    console.log('Asset deleted, proceeding with save');
+    // Lanjutkan proses simpan setelah delete
     router.push('/dashboard/targets');
+  };
+
+  // Handle close modal
+  const handleCloseModal = () => {
+    setShowSimpanConfirmation(false);
+    setShowAsetSerupa(false);
   };
 
   const renderStepContent = () => {
@@ -53,10 +87,7 @@ export default function RiskAssesmentForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit} // form akan submit ketika currentStep === 5 dan tombol submit ditekan
-      className="w-full h-full p-6 bg-white rounded-lg ml-4 text-gray-700"
-    >
+    <div className="w-full h-full p-6 bg-white rounded-lg ml-4 text-gray-700">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">
           {currentStep === 1 && 'About Assets'}
@@ -85,7 +116,8 @@ export default function RiskAssesmentForm({
 
         {currentStep === 5 ? (
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmitClick}
             className="px-4 py-2 rounded bg-green-500 hover:bg-green-600 text-white"
           >
             Submit
@@ -100,6 +132,19 @@ export default function RiskAssesmentForm({
           </button>
         )}
       </div>
-    </form>
+
+      {/* Modal Komponens */}
+      <SimpanConfirmation
+        isOpen={showSimpanConfirmation}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmSimpan}
+      />
+
+      <AsetSerupa
+        isOpen={showAsetSerupa}
+        onClose={handleCloseModal}
+        onDeleteAsset={handleDeleteAsset}
+      />
+    </div>
   );
 }

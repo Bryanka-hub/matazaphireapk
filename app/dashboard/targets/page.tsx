@@ -1,60 +1,57 @@
 'use client';
 
-import { Check, Download, Info, Share2, Trash2, X } from 'lucide-react';
+import { Check, Download, Share2, Trash2, X, Edit, ChevronDown, StopCircle, Play } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import CreateSchedule from './components/CreateSchedule';
+import DeleteConfirmation from './components/DeleteConfirmation';
+import { useRouter } from 'next/navigation';
 
 interface TargetData {
   name: string;
-  address: string;
-  description: string;
-  scanDate: string;
-  scanStatus: 'Not Scanned' | 'Completed';
-  riskRate: 'Low' | 'Medium' | 'Critical' | '-';
+  url: string;
+  riskCategory: 'Low' | 'Moderate' | 'High' | 'Critical';
+  createBy: 'Admin' | 'User';
+  status: 'Not Scanned' | 'Queued' | 'Scanning' | 'Completed';
+  schedule: string;
 }
 
 export default function TargetsPage() {
-  // Data dummy untuk tabel targets
+  const router = useRouter();
+
+  // Data dummy untuk tabel sesuai foto
   const [targets, setTargets] = useState<TargetData[]>([
     {
-      name: 'VAStudioDevSecOps',
-      address: 'https://VAStudioDevSecOps',
-      description: '-',
-      scanDate: '-',
-      scanStatus: 'Not Scanned',
-      riskRate: '-'
+      name: 'Web1',
+      url: 'https://Websatu.com',
+      riskCategory: 'Low',
+      createBy: 'Admin',
+      status: 'Not Scanned',
+      schedule: '-'
     },
     {
-      name: 'VAStudioDevSecOps',
-      address: 'https://VAStudioDevSecOps',
-      description: '-',
-      scanDate: '-',
-      scanStatus: 'Not Scanned',
-      riskRate: '-'
+      name: 'Web2',
+      url: 'https://Webdua.com',
+      riskCategory: 'Moderate',
+      createBy: 'User',
+      status: 'Queued',
+      schedule: '28-06-2025 (23:00)'
     },
     {
-      name: 'VAStudioDevSecOps',
-      address: 'https://VAStudioDevSecOps',
-      description: 'Cek vulnerabilities',
-      scanDate: '01-02-2025, 18:30',
-      scanStatus: 'Completed',
-      riskRate: 'Medium'
+      name: 'Web3',
+      url: 'https://Webtiga.com',
+      riskCategory: 'High',
+      createBy: 'Admin',
+      status: 'Scanning',
+      schedule: '25-06-2025 (19:00)'
     },
     {
-      name: 'VAStudioDevSecOps',
-      address: 'https://VAStudioDevSecOps',
-      description: 'Cek vulnerabilities',
-      scanDate: '01-02-2025, 18:30',
-      scanStatus: 'Completed',
-      riskRate: 'Low'
-    },
-    {
-      name: 'VAStudioDevSecOps',
-      address: 'https://VAStudioDevSecOps',
-      description: 'Cek vulnerabilities',
-      scanDate: '01-02-2025, 18:30',
-      scanStatus: 'Completed',
-      riskRate: 'Critical'
+      name: 'Web 4',
+      url: 'https://Webempat.com',
+      riskCategory: 'Critical',
+      createBy: 'Admin',
+      status: 'Completed',
+      schedule: '13-06-2025 (20:00)'
     }
   ]);
 
@@ -74,57 +71,19 @@ export default function TargetsPage() {
   const toggleSelectAll = () => {
     if (selectedItems.length === targets.length) {
       setSelectedItems([]);
-    } else if (selectedItems.length > 0) {
-      // Jika beberapa item sudah dipilih tapi tidak semua, kosongkan selection
-      setSelectedItems([]);
     } else {
       setSelectedItems(targets.map((_, index) => index));
     }
   };
 
-  // Cek apakah checkbox header dalam keadaan indeterminate
-  const isIndeterminate = selectedItems.length > 0 && selectedItems.length < targets.length;
-
-  // Render risk rate badge based on level
-  const renderRiskBadge = (risk: string) => {
-    if (risk === '-') return <span>-</span>;
-    
-    return (
-      <div className="flex items-center">
-        <span className={`w-2 h-2 rounded-full ${
-          risk === 'Low' ? 'bg-yellow-500' : 
-          risk === 'Medium' ? 'bg-orange-500' : 
-          'bg-purple-800'
-        } mr-2`}></span>
-        <span className={`${
-          risk === 'Low' ? 'text-yellow-500' : 
-          risk === 'Medium' ? 'text-orange-500' : 
-          'text-purple-800'
-        }`}>{risk}</span>
-      </div>
-    );
-  };
-
-  // State untuk pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 5;
-  const totalEntries = 10; // Total data yang ada
-
-  // State untuk dropdown filter Risk Rate dan Scan Status
+  // State untuk dropdown filter
   const [isRiskFilterOpen, setIsRiskFilterOpen] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<string[]>([]);
-  const [isScanStatusFilterOpen, setIsScanStatusFilterOpen] = useState(false);
-  const [selectedScanStatuses, setSelectedScanStatuses] = useState<string[]>([]);
-  const [isScanDateFilterOpen, setIsScanDateFilterOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState('Maret 2025');
-  const [startDate, setStartDate] = useState<number | null>(10);
-  const [endDate, setEndDate] = useState<number | null>(17);
-  const [dateSelectionMode, setDateSelectionMode] = useState<'start' | 'end'>('start');
+  const [isStatusFilterOpen, setIsStatusFilterOpen] = useState(false);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
-  // Toggle risk filter selection
-  const toggleRiskFilter = (risk: string, e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
-    // Prevent event from bubbling up to parent elements
-    e.stopPropagation();
+  // Toggle filter functions
+  const toggleRiskFilter = (risk: string) => {
     setSelectedRisks(prev => 
       prev.includes(risk) 
         ? prev.filter(item => item !== risk) 
@@ -132,47 +91,118 @@ export default function TargetsPage() {
     );
   };
 
-  // Toggle scan status filter selection
-  const toggleScanStatusFilter = (status: string, e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
-    // Prevent event from bubbling up to parent elements
-    e.stopPropagation();
-    setSelectedScanStatuses(prev => 
+  const toggleStatusFilter = (status: string) => {
+    setSelectedStatuses(prev => 
       prev.includes(status) 
         ? prev.filter(item => item !== status) 
         : [...prev, status]
     );
   };
 
-  // Handle date selection
-  const handleDateClick = (date: number, e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    if (dateSelectionMode === 'start') {
-      setStartDate(date);
-      setDateSelectionMode('end');
-    } else {
-      // Ensure end date is after start date
-      if (startDate !== null && date < startDate) {
-        setEndDate(startDate);
-        setStartDate(date);
-      } else {
-        setEndDate(date);
-      }
-      setDateSelectionMode('start');
+  // Render risk category badge
+  const renderRiskBadge = (risk: TargetData['riskCategory']) => {
+    switch (risk) {
+      case 'Low':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-400 text-white">
+            Low
+          </span>
+        );
+      case 'Moderate':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-orange-500 text-white">
+            Moderate
+          </span>
+        );
+      case 'High':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-500 text-white">
+            High
+          </span>
+        );
+      case 'Critical':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-purple-600 text-white">
+            Critical
+          </span>
+        );
+      default:
+        return null;
     }
   };
 
-  // Check if a date is in the selected range
-  const isInDateRange = (date: number) => {
-    if (startDate === null || endDate === null) return false;
-    return date >= startDate && date <= endDate;
+  // Render status badge
+  const renderStatusBadge = (status: TargetData['status']) => {
+    switch (status) {
+      case 'Not Scanned':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 flex items-center gap-1">
+            <X size={12} />
+            Tidak di-scan
+          </span>
+        );
+      case 'Queued':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 flex items-center gap-1">
+            <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
+            Diantrekan
+          </span>
+        );
+      case 'Scanning':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+            <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+            Sedang di-scan
+          </span>
+        );
+      case 'Completed':
+        return (
+          <span className="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 flex items-center gap-1">
+            <Check size={12} />
+            Selesai di-scan
+          </span>
+        );
+      default:
+        return null;
+    }
   };
 
-  // Close dropdowns when clicking outside
-  const closeDropdowns = () => {
-    setIsRiskFilterOpen(false);
-    setIsScanStatusFilterOpen(false);
-    setIsScanDateFilterOpen(false);
+  // State untuk modal
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [selectedTarget, setSelectedTarget] = useState<TargetData | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // Handle klik action button
+  const handleActionClick = (target: TargetData) => {
+    setSelectedTarget(target);
+    setIsScheduleModalOpen(true);
+  };
+
+  // Handle klik delete button
+  const handleDeleteClick = () => {
+    if (selectedItems.length > 0) {
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  // Handle konfirmasi delete
+  const handleDeleteConfirm = () => {
+    // Logic untuk delete selected items
+    const newTargets = targets.filter((_, index) => !selectedItems.includes(index));
+    setTargets(newTargets);
+    setSelectedItems([]);
+    setIsDeleteModalOpen(false);
+    
+    console.log(`Deleted ${selectedItems.length} items`);
+  };
+
+  // Handle scan button click
+  const handleScanClick = () => {
+    if (selectedItems.length > 0) {
+      // Navigate ke scan information page dengan data target pertama yang dipilih
+      const firstSelectedTarget = targets[selectedItems[0]];
+      router.push(`/dashboard/targets/scanInformation?target=${encodeURIComponent(firstSelectedTarget.name)}&url=${encodeURIComponent(firstSelectedTarget.url)}`);
+    }
   };
 
   return (
@@ -188,326 +218,187 @@ export default function TargetsPage() {
         
         <div className="flex gap-3 items-center">
           <button 
-            className="flex items-center gap-2 border border-red-500 text-red-500 px-4 py-2 rounded-md hover:bg-red-50"
+            onClick={handleDeleteClick}
+            className={`flex items-center gap-2 border border-red-500 text-red-500 px-4 py-2 rounded-md ${
+              selectedItems.length === 0 
+                ? 'opacity-50 cursor-not-allowed bg-gray-50' 
+                : 'hover:bg-red-50'
+            }`}
             disabled={selectedItems.length === 0}
           >
             <Trash2 size={16} />
             <span>Delete</span>
           </button>
           
-          {/* Garis vertikal merah */}
-          <div className="h-8 w-px bg-blue-500"></div>
-          
-          <button className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50">
-            <Share2 size={16} />
-            <span>Share</span>
-          </button>
-          
           <button className="flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-50">
             <Download size={16} />
             <span>Export</span>
+          </button>
+          
+          <button 
+            className={`flex items-center gap-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md ${
+              selectedItems.length === 0 
+                ? 'opacity-50 cursor-not-allowed bg-gray-50' 
+                : 'hover:bg-blue-50'
+            }`}
+            disabled={selectedItems.length === 0}
+          >
+            <StopCircle size={16} />
+            <span>Stop</span>
+          </button>
+          
+          <button 
+            onClick={handleScanClick}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200 ${
+              selectedItems.length > 0 
+                ? 'bg-blue-500 text-white border border-blue-500 hover:bg-blue-600' 
+                : 'border border-blue-500 text-blue-500 hover:bg-blue-50'
+            }`}
+          >
+            <Play size={16} />
+            <span>Scan</span>
           </button>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg shadow overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-white">
+          <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left">
-                <div className="relative">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
                   <input 
                     type="checkbox" 
-                    className="h-4 w-4" 
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     checked={selectedItems.length === targets.length && targets.length > 0}
-                    ref={el => {
-                      if (el) {
-                        el.indeterminate = isIndeterminate;
-                      }
-                    }}
                     onChange={toggleSelectAll}
                   />
-                  {isIndeterminate && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-2 h-0.5 bg-gray-500"></div>
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name Assets
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Url / Ip
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="flex items-center relative">
+                  Risk Category
+                  <button 
+                    className="ml-1 focus:outline-none"
+                onClick={() => {
+                      setIsRiskFilterOpen(!isRiskFilterOpen);
+                      setIsStatusFilterOpen(false);
+                }}
+              >
+                    <ChevronDown size={16} className="text-gray-400" />
+                </button>
+                  {isRiskFilterOpen && (
+                    <div className="absolute top-full left-0 mt-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-10 py-1">
+                      {['Low', 'Moderate', 'High', 'Critical'].map((risk) => (
+                        <div key={risk} className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center">
+                          <input
+                            type="checkbox"
+                            id={`risk-${risk}`}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            checked={selectedRisks.includes(risk)}
+                            onChange={() => toggleRiskFilter(risk)}
+                          />
+                          <label htmlFor={`risk-${risk}`} className="text-sm text-gray-700">
+                            {risk}
+                          </label>
+                        </div>
+                      ))}
                     </div>
                   )}
-                </div>
+                  </div>
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name Targets
+                Create by
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Address
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer relative"
+                <div className="flex items-center relative">
+                  Status
+                  <button 
+                    className="ml-1 focus:outline-none"
                 onClick={() => {
-                  setIsScanDateFilterOpen(!isScanDateFilterOpen);
+                      setIsStatusFilterOpen(!isStatusFilterOpen);
                   setIsRiskFilterOpen(false);
-                  setIsScanStatusFilterOpen(false);
                 }}
               >
-                Scan Date
-                <button className="ml-1 inline-flex">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                    <ChevronDown size={16} className="text-gray-400" />
                 </button>
-                {isScanDateFilterOpen && (
-                  <div className="absolute mt-2 bg-white border border-gray-200 shadow-lg rounded-md p-3 z-10 w-72" onClick={e => e.stopPropagation()}>
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="font-medium">{selectedMonth}</div>
-                      <div className="flex space-x-2">
-                        <button className="p-1">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </button>
-                        <button className="p-1">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </button>
+                  {isStatusFilterOpen && (
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10 py-1">
+                      {['Not Scanned', 'Queued', 'Scanning', 'Completed'].map((status) => (
+                        <div key={status} className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center">
+                        <input 
+                          type="checkbox" 
+                            id={`status-${status}`}
+                            className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            checked={selectedStatuses.includes(status)}
+                            onChange={() => toggleStatusFilter(status)}
+                        />
+                          <label htmlFor={`status-${status}`} className="text-sm text-gray-700">
+                            {status === 'Not Scanned' ? 'Tidak di-scan' : 
+                             status === 'Queued' ? 'Diantrekan' :
+                             status === 'Scanning' ? 'Sedang di-scan' :
+                             status === 'Completed' ? 'Selesai di-scan' : status}
+                        </label>
                       </div>
-                    </div>
-                    <div className="text-xs text-gray-500 mb-2 text-center">
-                      {dateSelectionMode === 'start' ? 'Pilih tanggal awal' : 'Pilih tanggal akhir'}
-                    </div>
-                    <div className="grid grid-cols-7 gap-1 text-center">
-                      <div className="text-gray-500">M</div>
-                      <div className="text-gray-500">T</div>
-                      <div className="text-gray-500">W</div>
-                      <div className="text-gray-500">T</div>
-                      <div className="text-gray-500">F</div>
-                      <div className="text-gray-500">S</div>
-                      <div className="text-gray-500">S</div>
-                      
-                      {/* Hari-hari dalam bulan */}
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31].map((day) => (
-                        <div 
-                          key={day} 
-                          className={`w-8 h-8 flex items-center justify-center cursor-pointer ${
-                            startDate === day ? 'rounded-full border-2 border-blue-500' : 
-                            endDate === day ? 'bg-blue-500 text-white rounded-full' : 
-                            isInDateRange(day) ? 'bg-blue-50' : ''
-                          }`}
-                          onClick={(e) => handleDateClick(day, e)}
-                        >
-                          {day}
-                        </div>
-                      ))}
-                      
-                      {/* Hari-hari bulan berikutnya */}
-                      {[1, 2, 3, 4].map((day) => (
-                        <div 
-                          key={`next-${day}`} 
-                          className="w-8 h-8 flex items-center justify-center text-gray-400"
-                        >
-                          {day}
-                        </div>
                       ))}
                     </div>
+                  )}
                   </div>
-                )}
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer relative"
-                onClick={() => {
-                  setIsScanStatusFilterOpen(!isScanStatusFilterOpen);
-                  setIsRiskFilterOpen(false);
-                  setIsScanDateFilterOpen(false);
-                }}
-              >
-                Scan Status
-                <button className="ml-1 inline-flex">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-                {isScanStatusFilterOpen && (
-                  <div className="absolute mt-2 bg-white border border-gray-200 shadow-lg rounded-md p-3 z-10 w-48" onClick={e => e.stopPropagation()}>
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="status-not-scanned" 
-                          className="mr-2"
-                          checked={selectedScanStatuses.includes('Not Scanned')}
-                          onChange={(e) => toggleScanStatusFilter('Not Scanned', e)}
-                        />
-                        <label htmlFor="status-not-scanned" className="flex items-center">
-                          <span>Not Scanned</span>
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="status-completed" 
-                          className="mr-2"
-                          checked={selectedScanStatuses.includes('Completed')}
-                          onChange={(e) => toggleScanStatusFilter('Completed', e)}
-                        />
-                        <label htmlFor="status-completed" className="flex items-center">
-                          <span>Completed</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </th>
-              <th 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer relative"
-                onClick={() => {
-                  setIsRiskFilterOpen(!isRiskFilterOpen);
-                  setIsScanStatusFilterOpen(false);
-                  setIsScanDateFilterOpen(false);
-                }}
-              >
-                Risk Rate
-                <button className="ml-1 inline-flex">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-                {isRiskFilterOpen && (
-                  <div className="absolute mt-2 bg-white border border-gray-200 shadow-lg rounded-md p-3 z-10 w-48" onClick={e => e.stopPropagation()}>
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="risk-note" 
-                          className="mr-2"
-                          checked={selectedRisks.includes('Note')}
-                          onChange={(e) => toggleRiskFilter('Note', e)}
-                        />
-                        <label htmlFor="risk-note" className="flex items-center">
-                          <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-2"></span>
-                          <span>Note</span>
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="risk-low" 
-                          className="mr-2"
-                          checked={selectedRisks.includes('Low')}
-                          onChange={(e) => toggleRiskFilter('Low', e)}
-                        />
-                        <label htmlFor="risk-low" className="flex items-center">
-                          <span className="inline-block w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                          <span>Low</span>
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="risk-moderate" 
-                          className="mr-2"
-                          checked={selectedRisks.includes('Moderate')}
-                          onChange={(e) => toggleRiskFilter('Moderate', e)}
-                        />
-                        <label htmlFor="risk-moderate" className="flex items-center">
-                          <span className="inline-block w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
-                          <span>Moderate</span>
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="risk-high" 
-                          className="mr-2"
-                          checked={selectedRisks.includes('High')}
-                          onChange={(e) => toggleRiskFilter('High', e)}
-                        />
-                        <label htmlFor="risk-high" className="flex items-center">
-                          <span className="inline-block w-3 h-3 rounded-full bg-red-500 mr-2"></span>
-                          <span>High</span>
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input 
-                          type="checkbox" 
-                          id="risk-critical" 
-                          className="mr-2"
-                          checked={selectedRisks.includes('Critical')}
-                          onChange={(e) => toggleRiskFilter('Critical', e)}
-                        />
-                        <label htmlFor="risk-critical" className="flex items-center">
-                          <span className="inline-block w-3 h-3 rounded-full bg-purple-800 mr-2"></span>
-                          <span>Critical</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                History
+                Schedule
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200">
             {targets.map((target, index) => (
               <tr 
                 key={index} 
-                className={`hover:bg-blue-200 ${selectedItems.includes(index) ? 'bg-blue-200' : ''}`}
+                className={`${selectedItems.includes(index) ? 'bg-blue-100' : 'hover:bg-blue-50'} transition-colors duration-150`}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input 
                     type="checkbox" 
-                    className="h-4 w-4"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     checked={selectedItems.includes(index)}
                     onChange={() => toggleSelectItem(index)}
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {target.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-500">
-                  <a href={target.address} target="_blank" rel="noopener noreferrer">
-                    {target.address}
+                  <a href={target.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-blue-600">
+                    {target.url}
                   </a>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {target.description}
-                  {target.description !== '-' && (
-                    <Info size={16} className="inline-block ml-2 text-gray-400" />
-                  )}
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {renderRiskBadge(target.riskCategory)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {target.scanDate}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {target.scanStatus === 'Not Scanned' ? (
-                    <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 shadow-sm border border-yellow-200">
-                      <X size={14} className="mr-1" />
-                      Not Scanned
-                    </span>
-                  ) : (
-                    <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 shadow-sm border border-green-200">
-                      <Check size={14} className="mr-1" />
-                      Completed
-                    </span>
-                  )}
+                  {target.createBy}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {renderRiskBadge(target.riskRate)}
+                  {renderStatusBadge(target.status)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <Link href="/dashboard/targets/detail">
-                    <button className={`px-3 py-1 border rounded-md cursor-pointer text-xs ${
-                      selectedItems.includes(index) 
-                        ? 'bg-blue-500 text-white border-blue-500' 
-                        : 'border-blue-500 text-blue-500 hover:bg-blue-50'
-                    }`}>
-                      Detail
+                  {target.schedule}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <button 
+                    onClick={() => handleActionClick(target)}
+                    className="p-2 text-gray-400 hover:text-gray-600"
+                  >
+                    <Edit size={16} />
                     </button>
-                  </Link>
                 </td>
               </tr>
             ))}
@@ -548,6 +439,24 @@ export default function TargetsPage() {
           </button>
         </div>
       </div>
+
+      {/* Modal Create Schedule */}
+      <CreateSchedule
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        targetData={selectedTarget ? {
+          name: selectedTarget.name,
+          url: selectedTarget.url
+        } : undefined}
+      />
+
+      {/* Modal Delete Confirmation */}
+      <DeleteConfirmation
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        selectedCount={selectedItems.length}
+      />
     </div>
   );
 }
