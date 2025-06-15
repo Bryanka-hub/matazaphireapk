@@ -90,26 +90,26 @@ export default function SettingsPage() {
   };
 
   // Handle submit form tambah user
-  const handleAddUserSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newUserWithId = {
-      ...newUser,
-      id: users.length + 1
+    const handleAddUserSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      const newUserWithId = {
+        ...newUser,
+        id: users.length + 1
+      };
+      setUsers(prev => [...prev, newUserWithId]);
+      setNewUser({
+        name: '',
+        email: '',
+        role: 'User',
+        permissions: {
+          create: false,
+          read: true,
+          update: true,
+          delete: false
+        }
+      });
+      setIsAddUserModalOpen(false);
     };
-    setUsers(prev => [...prev, newUserWithId]);
-    setNewUser({
-      name: '',
-      email: '',
-      role: 'User',
-      permissions: {
-        create: false,
-        read: true,
-        update: true,
-        delete: false
-      }
-    });
-    setIsAddUserModalOpen(false);
-  };
 
   // Handle submit form edit user
   const handleEditUserSubmit = (e: React.FormEvent) => {
