@@ -1,7 +1,6 @@
-import React from 'react';
+import { Bell, Search } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from './navbar/Navbar';
-import { Search, Bell } from 'lucide-react';
 
 interface UserProps {
   name: string;
@@ -33,7 +32,7 @@ const User = ({ name, email }: UserProps) => {
 
 export default function Header() {
   return (
-    <header className=" shadow-sm py-3 px-4">
+    <header className=" shadow-md py-3 px-4">
       <div className="flex items-center justify-between max-w-screen-2xl mx-auto">
         {/* Logo dan Navbar */}
         <div className="flex items-center space-x-4">
@@ -53,17 +52,17 @@ export default function Header() {
         </div>
         
         {/* Search dan User Profile */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ">
           {/* Search */}
-          <div className="relative">
-            <button className="p-2 bg-white rounded-full shadow-sm flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700">
+          <div className="relative ">
+            <button className="p-2 bg-white rounded-full shadow-lg flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700">
               <Search size={20} />
             </button>
           </div>
           
           {/* Notifications */}
           <div className="relative">
-            <button className="p-2 bg-white rounded-full shadow-sm flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700">
+            <button className="p-2 bg-white rounded-full shadow-lg flex items-center justify-center w-10 h-10 text-gray-500 hover:text-gray-700">
               <Bell size={20} />
             </button>
           </div>

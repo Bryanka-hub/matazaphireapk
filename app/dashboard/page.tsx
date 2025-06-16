@@ -11,7 +11,7 @@ export default function DashboardPage() {
         {/* Card 1 - Most Vulnerable Web (lebih lebar) */}
         <div className="col-span-12 md:col-span-6 bg-white rounded-lg shadow p-6 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800">Most Vulnerable Web</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">Web3</h1>
             <div className="mt-2 flex space-x-4 flex-col">
               <p className="text-md text-gray-600">
                 IP Address: <span className="text-blue-500 font-bold">192.168.10.101</span>
